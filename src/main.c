@@ -1,15 +1,63 @@
-#include <windows.h>
-#include <windowsx.h>
-#include <tchar.h>
+#include <oobebypass/oobebypass.h>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    PAINTSTRUCT ps;
+    HDC hdc;
+
+    LPCSTR title = _T("Welcome to OOBEBypass\0");
+    LPCSTR descr = _T("This guide will take you through bypassing the OOBE, "
+    "and creating a local account. This will bypass the OOBE entirely, press "
+    "\"Next\" at the bottom right to start.\0");
+
     switch(uMsg) {
+        case WM_CREATE:
+            hFont = InitFont(12);
+
+            break;
+        case WM_PAINT:
+            hdc = BeginPaint(hwnd, &ps);
+
+            HFONT oldFont = SelectObject(hdc, hFont);
+
+            SetTextColor(hdc, RGB(128, 128, 255));
+            SetBkMode(hdc, TRANSPARENT);
+
+            RECT rect;
+            rect.left = 15;
+            rect.top = 15;
+            rect.right = 200;
+            rect.bottom = 50;
+
+            DrawText(hdc, title, -1, &rect, DT_SINGLELINE | DT_TOP | DT_LEFT);
+
+            SetTextColor(hdc, RGB(0, 0, 0));
+            SetBkMode(hdc, TRANSPARENT);
+
+            rect.top = 60;
+            rect.left = 15;
+            rect.bottom = 150;
+            rect.right = 790;
+
+            DrawText(hdc, descr, -1, &rect, DT_WORDBREAK | DT_TOP | DT_LEFT);
+
+            //TextOut(hdc, 15, 15, title, _tcslen(title));
+            //TextOut(hdc, 15, 40, descr, _tcslen(descr));
+
+            SelectObject(hdc, oldFont);
+
+            EndPaint(hwnd, &ps);
+            break;
+        case WM_COMMAND:
+
+            break;
         case WM_DESTROY:
             PostQuitMessage(0);
-            return 0;
+            break;
         default:
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
+
+    return 0;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
