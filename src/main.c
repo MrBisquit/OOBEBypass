@@ -102,13 +102,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     return 0;
 }
 
-void RestartAsAdmin() {
-    char exePath[MAX_PATH];
-    GetModuleFileNameA(NULL, exePath, MAX_PATH);
-
-    ShellExecuteA(NULL, "runas", exePath, NULL, NULL, SW_SHOWNORMAL);
-}
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     if(IsProcessElevated() == 0) {
         int result = MessageBox(
@@ -135,6 +128,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             PostQuitMessage(1);
         }
     }
+
+    // Do some wizardry to figure out where we are
+    if(LoadState(&page) == 1) {
+        // There is a pre-existing state, load it up
+        UpdatePage(NULL, page);
+    } else {
+        if(SaveState(&page) == 0) {
+            MessageBox(
+                NULL,
+                "Failed to save configuration file.",
+                "OOBEBypass",
+                MB_OK | MB_ICONERROR
+            );
+        }
+    }
+
+    /*if(RegisterForRestart() == 0) {
+        MessageBox(
+            NULL,
+            "Failed to register the application for restart, you will "
+            "have to manually restart it.",
+            "OOBEBypass",
+            MB_OK | MB_ICONWARNING
+        );
+    }*/
 
     const char CLASS_NAME[] = "WTDawson.OOBEBypass";
 

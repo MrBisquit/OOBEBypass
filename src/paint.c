@@ -113,6 +113,11 @@ void OnCreate(HWND hwnd) {
     );
 
     SendMessageW(HWND_BL_PROGRESS, PBM_SETPOS, 0, 0);
+
+    if(page > 0) {
+        EnableWindow(HWND_CANCEL_BTN, 0);
+        UpdatePage(hwnd, page);
+    }
 }
 
 void HandleBack(HWND hwnd) {
@@ -141,4 +146,13 @@ void UpdatePage(HWND hwnd, int _page) {
     float current = chunks * page;
 
     SendMessageW(HWND_BL_PROGRESS, PBM_SETPOS, current, 0);
+
+    if(SaveState(&page) == 0) {
+        MessageBox(
+            hwnd,
+            "Failed to save configuration file.",
+            "OOBEBypass",
+            MB_OK | MB_ICONERROR
+        );
+    }
 }

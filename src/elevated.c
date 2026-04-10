@@ -10,14 +10,14 @@ BOOL IsProcessElevated()
 
 	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken))
 	{
-		printf("\n Failed to get Process Token :%d.",GetLastError());
+		//printf("\n Failed to get Process Token :%d.",GetLastError());
 		goto Cleanup;  // if Failed, we treat as False
 	}
 
 
 	if (!GetTokenInformation(hToken, TokenElevation, &elevation, sizeof(elevation), &dwSize))
 	{	
-		printf("\nFailed to get Token Information :%d.", GetLastError());
+		//printf("\nFailed to get Token Information :%d.", GetLastError());
 		goto Cleanup;// if Failed, we treat as False
 	}
 
@@ -30,4 +30,11 @@ Cleanup:
 		hToken = NULL;
 	}
 	return fIsElevated; 
+}
+
+void RestartAsAdmin() {
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+
+    ShellExecuteA(NULL, "runas", exePath, NULL, NULL, SW_SHOWNORMAL);
 }

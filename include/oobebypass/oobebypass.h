@@ -7,12 +7,16 @@
 #include <commctrl.h>
 #include <tchar.h>
 #include <shellapi.h>
+#include <internal/internal.h>
 
 #define USE_FONT "Segoe UI"
 
 extern HFONT hFont;
 
 BOOL IsProcessElevated();
+BOOL RegisterForRestart();
+
+void RestartAsAdmin();
 
 HFONT InitFont(int pointSize);
 
