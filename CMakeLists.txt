@@ -26,6 +26,7 @@ file(
     GLOB_RECURSE ${PROJECT_NAME}_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/resource.rc"
 )
 
 # Create executable
@@ -37,3 +38,21 @@ target_include_directories(
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+# Target link libraries
+if (WIN32)
+    target_link_libraries(
+        ${PROJECT_NAME}
+        PRIVATE
+        user32
+        gdi32
+        comdlg32
+        comctl32
+        uxtheme
+    )
+endif()
+
+# Enable warnings
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wshadow)
+endif()

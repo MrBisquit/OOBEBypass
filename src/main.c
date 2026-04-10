@@ -7,17 +7,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     LPCSTR title = _T("Welcome to OOBEBypass\0");
     LPCSTR descr = _T("This guide will take you through bypassing the OOBE, "
     "and creating a local account. This will bypass the OOBE entirely, press "
-    "\"Next\" at the bottom right to start.\0");
+    "\"Next\" at the bottom right to start.\n\n"
+    "It is important to note that after pressing next on this page, you cannot "
+    "go back, and the option to cancel will be disabled. If you wish to cancel, "
+    "please do so now.\0");
 
     switch(uMsg) {
         case WM_CREATE:
             hFont = InitFont(12);
+
+            OnCreate(hwnd);
 
             break;
         case WM_PAINT:
             hdc = BeginPaint(hwnd, &ps);
 
             HFONT oldFont = SelectObject(hdc, hFont);
+            SelectObject(hdc, InitFont(17));
 
             SetTextColor(hdc, RGB(128, 128, 255));
             SetBkMode(hdc, TRANSPARENT);
@@ -25,18 +31,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             RECT rect;
             rect.left = 15;
             rect.top = 15;
-            rect.right = 200;
+            rect.right = 300;
             rect.bottom = 50;
 
             DrawText(hdc, title, -1, &rect, DT_SINGLELINE | DT_TOP | DT_LEFT);
+
+            SelectObject(hdc, hFont);
 
             SetTextColor(hdc, RGB(0, 0, 0));
             SetBkMode(hdc, TRANSPARENT);
 
             rect.top = 60;
             rect.left = 15;
-            rect.bottom = 150;
-            rect.right = 790;
+            rect.bottom = 570;
+            rect.right = 775;
 
             DrawText(hdc, descr, -1, &rect, DT_WORDBREAK | DT_TOP | DT_LEFT);
 
@@ -50,7 +58,26 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             EndPaint(hwnd, &ps);
             break;
         case WM_COMMAND:
+            if(LOWORD(wParam) == WIN_CANCEL_BTN) {
+                // Set the progress to 0% just because why not
+                SendMessageW(HWND_BL_PROGRESS, PBM_SETPOS, 0, 0);
 
+                // Hide the window
+                ShowWindow(hwnd, 0);
+
+                // Say no changes were made
+                MessageBox(
+                    hwnd,
+                    "No changes were made, you can continue with the built-in OOBE.\n\n"
+                    "Made by WTDawson (MrBisquit on GitHub)\n"
+                    "https://github.com/MrBisquit/OOBEBypass",
+                    "OOBEBypass",
+                    MB_OK | MB_ICONINFORMATION
+                );
+
+                // Die
+                PostQuitMessage(0);
+            }
             break;
         case WM_DESTROY:
             PostQuitMessage(0);
@@ -64,6 +91,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     const char CLASS_NAME[] = "WTDawson.OOBEBypass";
+
+    INITCOMMONCONTROLSEX icc = { sizeof(icc), ICC_WIN95_CLASSES | ICC_BAR_CLASSES | ICC_PROGRESS_CLASS };
+    InitCommonControlsEx(&icc);
 
     /*WNDCLASS wc;
     wc.lpfnWndProc = WindowProc;

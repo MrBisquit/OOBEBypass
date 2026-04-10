@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <windows.h>
 #include <windowsx.h>
+#include <commctrl.h>
 #include <tchar.h>
 
 #define USE_FONT "Segoe UI"
@@ -13,6 +14,23 @@ extern HFONT hFont;
 HFONT InitFont(int pointSize);
 
 void OnPaint(HWND hwnd, PAINTSTRUCT ps, HDC hdc);
+void OnCreate(HWND hwnd);
+
+enum {
+    // Buttons on the bottom right
+    WIN_CANCEL_BTN,
+    WIN_BACK_BTN,
+    WIN_NEXT_BTN,
+    
+    // Progress bar on the bottom left
+    WIN_BL_PROGRESS
+};
+
+extern HWND HWND_CANCEL_BTN;
+extern HWND HWND_BACK_BTN;
+extern HWND HWND_NEXT_BTN;
+
+extern HWND HWND_BL_PROGRESS;
 
 /*
     0 - Information page

@@ -1,0 +1,6 @@
+#include <windows.h>
+#include <commctrl.h>
+#include <oobebypass/resource.h>
+
+// App manifest for Common Controls v6
+1 24 "app.manifest"
