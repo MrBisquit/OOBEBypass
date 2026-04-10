@@ -38,6 +38,13 @@ Follow the following instructions before continuing:
     the executable as parameters)
 6. Let the program do it's magic.
 
+If you are using a Hyper-V virtual machine to test this, use the following command to copy the file into
+the Virtual Machine (Run it as Administrator):
+```ps
+Copy-VMFile "VMName" -SourcePath "F:\Test.txt" -DestinationPath "C:\Temp\Test.txt" -CreateFullPath -FileSource Host```
+
+If you are developing the program, it is best to create a `copy.ps1` script, as that is in the `.gitignore` file.
+
 ### Using the GUI
 
 ### Using the CLI

@@ -8,9 +8,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     LPCSTR descr = _T("This guide will take you through bypassing the OOBE, "
     "and creating a local account. This will bypass the OOBE entirely, press "
     "\"Next\" at the bottom right to start.\n\n"
-    "It is important to note that after pressing next on this page, you cannot "
+    "It is important to note that after pressing \"Next\" on this page, you cannot "
     "go back, and the option to cancel will be disabled. If you wish to cancel, "
-    "please do so now.\0");
+    "please do so now.\n\n"
+    "Information:\n"
+    "\t- You may have to run this program multiple times.\n"
+    "\t- Your computer may restart multiple times.\n"
+    "\t- Wait for it to finish, killing the program while it is mid-process may "
+    "have unexpected consequences.\n"
+    "\t- Your computer may reboot, and a different OOBE page may come up, you must "
+    "run this program again, so that it can complete its process.\0");
 
     switch(uMsg) {
         case WM_CREATE:
@@ -22,36 +29,38 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_PAINT:
             hdc = BeginPaint(hwnd, &ps);
 
-            HFONT oldFont = SelectObject(hdc, hFont);
-            SelectObject(hdc, InitFont(17));
+            if(page == 0) {
+                HFONT oldFont = SelectObject(hdc, hFont);
+                SelectObject(hdc, InitFont(17));
 
-            SetTextColor(hdc, RGB(128, 128, 255));
-            SetBkMode(hdc, TRANSPARENT);
+                SetTextColor(hdc, RGB(128, 128, 255));
+                SetBkMode(hdc, TRANSPARENT);
 
-            RECT rect;
-            rect.left = 15;
-            rect.top = 15;
-            rect.right = 300;
-            rect.bottom = 50;
+                RECT rect;
+                rect.left = 15;
+                rect.top = 15;
+                rect.right = 300;
+                rect.bottom = 50;
 
-            DrawText(hdc, title, -1, &rect, DT_SINGLELINE | DT_TOP | DT_LEFT);
+                DrawText(hdc, title, -1, &rect, DT_SINGLELINE | DT_TOP | DT_LEFT);
 
-            SelectObject(hdc, hFont);
+                SelectObject(hdc, hFont);
 
-            SetTextColor(hdc, RGB(0, 0, 0));
-            SetBkMode(hdc, TRANSPARENT);
+                SetTextColor(hdc, RGB(0, 0, 0));
+                SetBkMode(hdc, TRANSPARENT);
 
-            rect.top = 60;
-            rect.left = 15;
-            rect.bottom = 570;
-            rect.right = 775;
+                rect.top = 60;
+                rect.left = 15;
+                rect.bottom = 570;
+                rect.right = 775;
 
-            DrawText(hdc, descr, -1, &rect, DT_WORDBREAK | DT_TOP | DT_LEFT);
+                DrawText(hdc, descr, -1, &rect, DT_WORDBREAK | DT_TOP | DT_LEFT);
 
-            //TextOut(hdc, 15, 15, title, _tcslen(title));
-            //TextOut(hdc, 15, 40, descr, _tcslen(descr));
+                //TextOut(hdc, 15, 15, title, _tcslen(title));
+                //TextOut(hdc, 15, 40, descr, _tcslen(descr));
 
-            SelectObject(hdc, oldFont);
+                SelectObject(hdc, oldFont);
+            }
 
             OnPaint(hwnd, ps, hdc);
 
@@ -77,6 +86,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                 // Die
                 PostQuitMessage(0);
+            } else if(LOWORD(wParam) == WIN_BACK_BTN) {
+                HandleBack(hwnd);
+            } else if(LOWORD(wParam) == WIN_NEXT_BTN) {
+                HandleNext(hwnd);
             }
             break;
         case WM_DESTROY:
@@ -89,7 +102,40 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     return 0;
 }
 
+void RestartAsAdmin() {
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+
+    ShellExecuteA(NULL, "runas", exePath, NULL, NULL, SW_SHOWNORMAL);
+}
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    if(IsProcessElevated() == 0) {
+        int result = MessageBox(
+            NULL,
+            "This application must be run with Administrator permissions. "
+            "Press \"YES\" to attempt to restart as Administrator.",
+            "OOBEBypass",
+            MB_YESNO | MB_ICONWARNING
+        );
+
+        if(result == IDYES) {
+            RestartAsAdmin();
+            PostQuitMessage(0);
+        } else {
+            MessageBox(
+                NULL,
+                "No changes were made, you can continue with the built-in OOBE.\n\n"
+                "Made by WTDawson (MrBisquit on GitHub)\n"
+                "https://github.com/MrBisquit/OOBEBypass",
+                "OOBEBypass",
+                MB_OK | MB_ICONINFORMATION
+            );
+
+            PostQuitMessage(1);
+        }
+    }
+
     const char CLASS_NAME[] = "WTDawson.OOBEBypass";
 
     INITCOMMONCONTROLSEX icc = { sizeof(icc), ICC_WIN95_CLASSES | ICC_BAR_CLASSES | ICC_PROGRESS_CLASS };

@@ -12,8 +12,48 @@ void OnPaint(HWND hwnd, PAINTSTRUCT ps, HDC hdc) {
     HFONT oldFont = SelectObject(hdc, hFont);
 
     switch(page) {
-        case 0:
+        case 1:
+            HFONT oldFont = SelectObject(hdc, hFont);
+            SelectObject(hdc, InitFont(17));
 
+            SetTextColor(hdc, RGB(128, 128, 255));
+            SetBkMode(hdc, TRANSPARENT);
+
+            RECT rect;
+            rect.left = 15;
+            rect.top = 15;
+            rect.right = 300;
+            rect.bottom = 50;
+
+            DrawText(
+                hdc,
+                (LPCSTR)_T("Please wait...\0"),
+                -1,
+                &rect,
+                DT_SINGLELINE | DT_TOP | DT_LEFT
+            );
+
+            SelectObject(hdc, hFont);
+
+            SetTextColor(hdc, RGB(0, 0, 0));
+            SetBkMode(hdc, TRANSPARENT);
+
+            rect.top = 60;
+            rect.left = 15;
+            rect.bottom = 570;
+            rect.right = 775;
+
+            DrawText(
+                hdc,
+                (LPCSTR)_T("Bypassing the first stage of the OOBE, your computer will restart shortly.\n\n"
+                    "At this stage, the program will enable the Administrator account, and disable the "
+                    "Default account, then reboot.\0"),
+                -1,
+                &rect,
+                DT_WORDBREAK | DT_TOP | DT_LEFT
+            );
+
+            EnableWindow(HWND_NEXT_BTN, 0);
             break;
     }
 
@@ -31,6 +71,8 @@ void OnCreate(HWND hwnd) {
         (HINSTANCE)GetWindowLongPtr(hwnd, GWLP_HINSTANCE),
         NULL
     );
+
+    //SendMessage(HWND_NEXT_BTN, BCM_SETSHIELD, 1, 1);
 
     HWND_BACK_BTN = CreateWindow(
         "BUTTON",
@@ -70,5 +112,33 @@ void OnCreate(HWND hwnd) {
         NULL
     );
 
-    SendMessageW(HWND_BL_PROGRESS, PBM_SETPOS, 5, 0);
+    SendMessageW(HWND_BL_PROGRESS, PBM_SETPOS, 0, 0);
+}
+
+void HandleBack(HWND hwnd) {
+
+}
+
+void HandleNext(HWND hwnd) {
+    if(page == 0) {
+        EnableWindow(HWND_CANCEL_BTN, 0);
+
+        UpdatePage(hwnd, 1);
+    }
+
+    RECT clearArea = { 15, 15, 775, 775 };
+
+    InvalidateRect(hwnd, &clearArea, 1);
+    UpdateWindow(hwnd);
+}
+
+void UpdatePage(HWND hwnd, int _page) {
+    int total_pages = 5;
+
+    page = _page;
+
+    float chunks = 100 / total_pages;
+    float current = chunks * page;
+
+    SendMessageW(HWND_BL_PROGRESS, PBM_SETPOS, current, 0);
 }

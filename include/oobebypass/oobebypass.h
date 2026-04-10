@@ -6,15 +6,23 @@
 #include <windowsx.h>
 #include <commctrl.h>
 #include <tchar.h>
+#include <shellapi.h>
 
 #define USE_FONT "Segoe UI"
 
 extern HFONT hFont;
 
+BOOL IsProcessElevated();
+
 HFONT InitFont(int pointSize);
 
 void OnPaint(HWND hwnd, PAINTSTRUCT ps, HDC hdc);
 void OnCreate(HWND hwnd);
+
+void HandleBack(HWND hwnd);
+void HandleNext(HWND hwnd);
+
+void UpdatePage(HWND hwnd, int page);
 
 enum {
     // Buttons on the bottom right
@@ -38,6 +46,7 @@ extern HWND HWND_BL_PROGRESS;
         Essentially kills the OOBE
     2 - Gathering information page
     3 - 2nd Progress page
+    4 - Finished page
 */
 extern int page;
 

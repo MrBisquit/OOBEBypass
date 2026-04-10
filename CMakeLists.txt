@@ -49,6 +49,7 @@ if (WIN32)
         comdlg32
         comctl32
         uxtheme
+        netapi32
     )
 endif()
 
