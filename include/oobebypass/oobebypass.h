@@ -14,4 +14,13 @@ HFONT InitFont(int pointSize);
 
 void OnPaint(HWND hwnd, PAINTSTRUCT ps, HDC hdc);
 
+/*
+    0 - Information page
+    1 - 1st Progress page
+        Essentially kills the OOBE
+    2 - Gathering information page
+    3 - 2nd Progress page
+*/
+extern int page;
+
 #endif

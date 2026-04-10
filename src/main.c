@@ -45,6 +45,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
             SelectObject(hdc, oldFont);
 
+            OnPaint(hwnd, ps, hdc);
+
             EndPaint(hwnd, &ps);
             break;
         case WM_COMMAND:
