@@ -17,7 +17,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     "\t- Wait for it to finish, killing the program while it is mid-process may "
     "have unexpected consequences.\n"
     "\t- Your computer may reboot, and a different OOBE page may come up, you must "
-    "run this program again, so that it can complete its process.\0");
+    "run this program again, so that it can complete its process.\n\n"
+    "This application is not associated, or affiliated with "
+    "in any way with Microsoft Windows.\0");
 
     switch(uMsg) {
         case WM_CREATE:
@@ -94,6 +96,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             break;
         case WM_DESTROY:
             PostQuitMessage(0);
+            break;
+        case WM_CLOSE:
+            if(page == 0)
+                DestroyWindow(hwnd);
             break;
         default:
             return DefWindowProc(hwnd, uMsg, wParam, lParam);

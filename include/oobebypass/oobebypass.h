@@ -35,7 +35,11 @@ enum {
     WIN_NEXT_BTN,
     
     // Progress bar on the bottom left
-    WIN_BL_PROGRESS
+    WIN_BL_PROGRESS,
+
+    // Page 1
+    WIN_P1_USERNAME,
+    WIN_P1_PASSWORD
 };
 
 extern HWND HWND_CANCEL_BTN;
@@ -44,8 +48,13 @@ extern HWND HWND_NEXT_BTN;
 
 extern HWND HWND_BL_PROGRESS;
 
+// Inputs for page 1
+extern HWND HWND_P1_USERNAME;
+extern HWND HWND_P1_PASSWORD;
+
 /*
     0 - Information page
+    1 - Create local account page
     1 - 1st Progress page
         Essentially kills the OOBE
     2 - Gathering information page

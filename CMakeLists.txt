@@ -30,7 +30,7 @@ file(
 )
 
 # Create executable
-add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES})
+add_executable(${PROJECT_NAME} WIN32 ${${PROJECT_NAME}_SOURCES})
 
 # Target includes
 target_include_directories(
